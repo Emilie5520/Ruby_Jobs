@@ -46,9 +46,9 @@ def totaux(data_hash, parsed_date)
     	com += price_communication
     	color += price_color if has_color?(communication)
 
-	  	data_hash['practitioners'].select { |practitioner| practitioner['id'] == communication['practitioner_id']}.each do |practionner|
-	  		express += price_express_delivery(practionner) if has_express_delivery?(practionner)
-	    end	    
+	  	data_hash['practitioners'].select { |practitioner| practitioner['id'] == communication['practitioner_id']}.each do |practitionner|
+	  		express += price_express_delivery(practitionner) if has_express_delivery?(practitionner)
+	    end
 	  end
 	  resultat = (pages + com + color + express).round(2)
 end
@@ -62,11 +62,14 @@ final['totals'] = Array.new
 data_hash['communications'].each do |communication|
   parsed_date = parse_date(communication['sent_at'])
     totals = {
-	'sent_on' => parsed_date,
-	'total' => totaux(data_hash, parsed_date)
+	    'sent_on' => parsed_date,
+	    'total' => totaux(data_hash, parsed_date)
     }
   final['totals'] << totals 
 end
 
 final['totals'] = final['totals'].uniq
-pp final
+
+File.open("output_final.json", 'w') do |f|
+  f.write(JSON.pretty_generate(final))
+end
